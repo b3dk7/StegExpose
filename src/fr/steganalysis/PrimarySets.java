@@ -1,5 +1,7 @@
 /*
  * On Steganalysis of Random LSB Embedding in Continuous-tone Images
+ * 
+ * source: http://code.google.com/p/simple-steganalysis-suite/
  */
 
 package fr.steganalysis;

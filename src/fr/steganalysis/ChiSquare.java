@@ -8,6 +8,8 @@
  * More info :
  * http://www.guillermito2.net/stegano/tools/index.html
  * http://cuneytcaliskan.blogspot.fr/2011/12/steganalysis-chi-square-attack-lsb.html
+ * 
+ * source: http://code.google.com/p/simple-steganalysis-suite/
  */
 
 package fr.steganalysis;
