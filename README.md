@@ -1,8 +1,11 @@
-#StegExpose
+StegExpose
+==========
 
-##Description
+Description
+-----------
 
-##Usage
+Usage
+-----
 *java -jar StegExpose.jar [directory] [speed] [threshold] [csv file]*
 where
 *[directory]* - direcotry containing images to be diagnosed
@@ -11,7 +14,8 @@ where
 *[csv file]* - Optional. Name of the csv (comma seperated value) file that is to be generated. that If left blank, the program will simply output to the console. 
 
 
-##Example
+Example
+------
 Basic usage of Stegexpose, providing a directory of images as the only argument
 
 *java -jar StegExpose.jar testFolder*
@@ -24,8 +28,10 @@ Updating the threshold and running the program in fast mode to save time.
 
 *java - jar StegExpose testFolder fast 0.3*
 
-##Bugs
+Bugs
+----
 Component detecters do not all generate results for all images meaning the final steganalytic diagnosis in not always based on all four detectors.
 
-##Sources
+Sources
+--------
 

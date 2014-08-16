@@ -1,3 +1,5 @@
+
+
 package stegexpose;
 //import fr.steganalysis;
 import invisibleinktoolkit.benchmark.RSAnalysis;
@@ -5,153 +7,260 @@ import invisibleinktoolkit.benchmark.SamplePairs;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
 //import fr.steganalysis.AverageLsb;
 import fr.steganalysis.ChiSquare;
-import fr.steganalysis.DifferenceHistogramAttack;
 import fr.steganalysis.ImageFileManager;
 import fr.steganalysis.PrimarySets;
 
 
 
-
+/**
+ * StegExpose
+ * 
+ * @author Benedikt Boehm
+ * @version 0.1
+ */
 
 
 public class RunStegExpose {
 	
 	//size of chi square blocks 
-	private static int size = 1024;
+	private static int csSize = 1024;
+	//threshold to be applied to stegexpose indicator
+	private static double threshold = 0.2;
+	//setting percentage points for fast mode
+	//private static double speedThreshold = 0.1;
+	//private static double cleanThreshold;
+
+	private static boolean fast = false;
+	private static boolean csvMode = false;
+	
+	private static double minProb = 0;
+	private static double maxProb = 1;
+	
+	private static int RED =0;
+	private static int GREEN =1;
+	private static int BLUE =2;
+	
+	private static String fileName;
+	
+	
+	//prepare csv file file
+	private static PrintWriter writer;
+	
+	
+	private static ArrayList<Double> stegExposeInput;
+	private static double fileSize;
+	
+	
+	
+
+	private static Double ps = null;
+	private static Double cs=null;
+	private static Double sp = null;
+	private static Double rs = null;
+	private static Double fusion=null;
+	private static Long fusionQ=null;
+	
+	
 	
 	public static void main(String[] args){
 		
 		//obtaining all files to be steganalysed
-		File folder = new File(args[0]);
-		File[] listOfFiles = folder.listFiles();
-		
-		//create output file
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(args[1], "UTF-8");
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+		File[] listOfFiles;
+		if(args.length>0){
+			File folder = new File(args[0]);
+			listOfFiles = folder.listFiles();
 		}
-		writer.println();
-		writer.println("file name,file size,image width,image height,ps,dh,sp,rs,cs,spQuant,rsQuant,csQuant");
+		else{
+			System.out.println("please provide StegExpose with directory of files to be scanned");
+			return;
+		}
+		
+		//setting speed mode (optional parameter)
+		if(args.length>1)
+			if(args[1].equals("fast"))
+				fast = true;
+		
+		
+		//setting user defined threshold threshold (optional parameter)
+		if(args.length>2){
+			try{
+				double userDefinedThreshold = Double.valueOf(args[2]);
+				if(userDefinedThreshold>=minProb&&userDefinedThreshold<=maxProb)
+					threshold = userDefinedThreshold;
+			}
+			catch(Exception e){}
+			
+		}
+		
+		//now that thresholds are set, we can setup thresholds for fast decisions
+		//cleanThreshold = threshold - speedThreshold;
+		//double stegoThreshold = threshold + speedThreshold;
+		
+		
+		//creating a file for csv output providing full steganalytic report (optional parameter)
+		if(args.length>3)
+			csvMode =true;
+		if(csvMode){
+			try {
+			writer = new PrintWriter(args[3], "UTF-8");
+			}
+			catch (Exception e) {}
+			writer.println();
+			writer.println("File name,Above stego threshold?,Secret message size in bytes (ignore for clean files),Primary Sets,Chi Square,Sample Pairs,RS analysis,Fusion (mean)");
+		}
+
+		
+		
+		
+		
 		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		    	writer.print(file.getName()+","+file.length()+",");
-		        
+		    //reset all detectors
+			ps = null;
+			cs = null;
+			sp = null;
+			rs = null;
+			fusion = null;
+			fusionQ = null;
+			if (file.isFile()) {
 		    	BufferedImage image = ImageFileManager.loadImage(file);
-		    	//image routine
+		    	
+		    	//routine (currently only for images)
 		        if(image != null){
+		        	fileSize = file.length();
+		        	fileName=file.getName();
 		        	
-			    	//loading image from command line
-					
-			        //BufferedImage image;
-			        //BufferedImage image = ImageFileManager.loadImage(file);
-					writer.print(image.getWidth()+","+image.getHeight()+",");
-					//computing primary set
-					String psS;
+					stegExposeInput = new ArrayList<Double>();
+		        	
+		        	//computing primary set
 					try{
-						PrimarySets ps = new PrimarySets(image);
-						ps.run();
-						psS = Double.toString(ps.getResult());
+						PrimarySets pso = new PrimarySets(image);
+						pso.run();
+						ps = steralize(pso.getResult());
+						add(ps);
 					}
 					catch(Exception e){
-						psS = "fail";
 					}
 					
-					//computing difference histrogram
-					String dhS;
+					
+					//looking for fast break
+					if(isClean()){
+						continue;
+					}
+					//computing chi square attack
 					try{
-						DifferenceHistogramAttack dh = new DifferenceHistogramAttack(image);
-						dh.run();
-						dhS = Double.toString(dh.getResult());
-					}
-					catch(Exception e){
-						dhS = "fail";
-					}
-					
-					
-					
-					//computing chi-square distribution of PoV
-					String csQuantS;
-					String csAvgS;
-					try{
-						int nbBlocks = ((3*image.getWidth()*image.getHeight())/size) - 1;
+						int nbBlocks = ((3*image.getWidth()*image.getHeight())/csSize) - 1;
 						double[] x = new double[nbBlocks];
 						double[] chi = new double[nbBlocks];
-						ChiSquare.chiSquareAttackTopToBottom(image, x, chi, size);
+						ChiSquare.chiSquareAttackTopToBottom(image, x, chi, csSize);
 						double csQuant = 0;
 						for(double csVal : chi)
 							csQuant += csVal;
-						double csAvg = csQuant/chi.length;
-						csQuantS = Double.toString(csQuant*size);
-						csAvgS = Double.toString(csAvg);
+						cs = steralize(csQuant/chi.length);
+						add(cs);
+					}
+					catch(Exception e){
 						
 					}
-					catch(Exception e){
-						csQuantS = "fail";
-						csAvgS = "fail";
-					}
 					
+					//looking for fast break
+					if(isClean()){
+						continue;
+					}
 					
 					//computing Sample Pairs average
-					String spAverageValS;
-					String spAverageLengthS;
 					try{
-						SamplePairs sp = new SamplePairs();
-						double spAverageVal = (sp.doAnalysis(image, 0) + sp.doAnalysis(image, 1) + sp.doAnalysis(image, 2))/3;
-						double spAverageLength = ((image.getHeight() * image.getWidth() * 3)/8)* spAverageVal;
-						spAverageValS=Double.toString(spAverageVal);
-						spAverageLengthS=Double.toString(spAverageLength);
+						SamplePairs spo = new SamplePairs();
+						sp = steralize((spo.doAnalysis(image, RED) + spo.doAnalysis(image, GREEN) + spo.doAnalysis(image, BLUE))/3);
+						add(sp);
 					}
 					catch(Exception e){
-						spAverageValS = "fail";
-						spAverageLengthS = "fail";
 					}
 					
+					
+					//looking for fast break
+					if(isClean()){
+						continue;
+					}
 					
 					
 					//computing RS Analysis average
-					String rsAverageValS;
-					String rsAverageLengthS;
 					try{
-						RSAnalysis rsa = new RSAnalysis(2,2);
-						
+						RSAnalysis rso = new RSAnalysis(2,2);
 						//RS analysis for overlapping groups
-						double rsAverageOverlappingVal = (rsa.doAnalysis(image, 0, true)[26] + rsa.doAnalysis(image, 1, true)[26] + rsa.doAnalysis(image, 2, true)[26])/3;
-						double rsAverageOverlappingLength = (rsa.doAnalysis(image, 0, true)[27] + rsa.doAnalysis(image, 1, true)[27] + rsa.doAnalysis(image, 2, true)[27])/3;
-						
-						
+						double rsAverageOverlappingVal = (rso.doAnalysis(image, RED, true)[26] + rso.doAnalysis(image, GREEN, true)[26] + rso.doAnalysis(image, BLUE, true)[26])/3;
 						//RS analysis for non-overlapping groups
-						double rsAverageNonOverlappingVal = (rsa.doAnalysis(image, 0, false)[26] + rsa.doAnalysis(image, 1, false)[26] + rsa.doAnalysis(image, 2, false)[26])/3;
-						double rsAverageNonOverlappingLength = (rsa.doAnalysis(image, 0, false)[27] + rsa.doAnalysis(image, 1, false)[27] + rsa.doAnalysis(image, 2, false)[27])/3;
+						double rsAverageNonOverlappingVal = (rso.doAnalysis(image, RED, false)[26] + rso.doAnalysis(image, GREEN, false)[26] + rso.doAnalysis(image, BLUE, false)[26])/3;
 						
-						
-						rsAverageValS = Double.toString((rsAverageOverlappingVal+rsAverageNonOverlappingVal)/2);
-						rsAverageLengthS = Double.toString((rsAverageOverlappingLength+rsAverageNonOverlappingLength)/2);
+						rs = steralize((rsAverageOverlappingVal+rsAverageNonOverlappingVal)/2);
+						add(rs);
 					}
 					catch(Exception e){
-						rsAverageValS = "fail";
-						rsAverageLengthS = "fail";
 					}
-					
-					//write detector results to file
-					
-					writer.println(psS+","+dhS+","+spAverageValS+","+rsAverageValS+","+csAvgS+","+spAverageLengthS+","+rsAverageLengthS+","+csQuantS);
-					writer.flush();
+					printResults();
 					
 		        }
 	        
 		    }
 		}
-		writer.close();
+		if(csvMode)
+			writer.close();
+	}
+	private static double steralize(double x){
+		x=Math.abs(x);
+		if(x>1)
+			return 1;
+		return x;
+	}
+	private static void printResults(){
+		//setting up stegexpose and quantitative stegexpose detector
+		fusion = Fuse.se(stegExposeInput);
+		fusionQ = Math.round(Fuse.seQ(fusion, fileSize));
+		//determine is a file is a stego or clean file
+		boolean stego;
+		if(fusion>threshold)
+			stego = true;
+		else
+			stego = false;
+		
+		if(csvMode){
+			writer.println(fileName+","+stego+","+fusionQ+","+ps+","+cs+","+sp+","+rs+","+fusion);
+			writer.flush();
+		}
+		else
+			if(stego)
+				System.out.println(fileName + " is suspicious. Approximate amount of hidden data is "+fusionQ+" bytes.");
+    
+	}
+	
+	private static void add(Double x){
+		if(x.isNaN()==false){
+			stegExposeInput.add(x);
+		}
+	}
+	
+
+	/**
+	 * used by fast mode to check if it is save to pass a file off as clean
+	 * 
+	 * @param abyte The byte to flip.
+	 * @return The byte with the flipped LSB.
+	 */
+	private static boolean isClean(){
+		if(fast){
+			if(Fuse.se(stegExposeInput)<threshold){
+				printResults();
+				return true;
+			}
+				
+			
+		}
+		return false;
+			
 	}
 }
