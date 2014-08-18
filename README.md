@@ -9,10 +9,9 @@ Usage
 *java -jar StegExpose.jar [directory] [speed] [threshold] [csv file]*
 where
 *[directory]* - direcotry containing images to be diagnosed
-*[speed]* - Optional. Can be set to 'default' or 'fast' (the default value is 'default'). default mode will try and run all detectors whereas fast mode will skip the expensive detectors incase cheap detectors give a strong result.
+*[speed]* - Optional. Can be set to 'default' or 'fast' (set to 'default if left blank). default mode will try and run all detectors whereas fast mode will skip the expensive detectors incase cheap detectors are able to determine if a file is clean.
 *[threshold]* - Optional. The default value here is xxxx and determines the the level at which files considered to hide data or not. A floating point value between 0 and 1 can be used here to update the threshold. 
 *[csv file]* - Optional. Name of the csv (comma seperated value) file that is to be generated. that If left blank, the program will simply output to the console. 
-
 
 Example
 ------
@@ -28,10 +27,15 @@ Updating the threshold and running the program in fast mode to save time.
 
 *java - jar StegExpose testFolder fast 0.3*
 
+Threshold Table
+----------------
+
+
 Bugs
 ----
 Component detecters do not all generate results for all images meaning the final steganalytic diagnosis in not always based on all four detectors.
 
 Sources
 --------
-
+Faure, Bastien (2013). simple-steganalysis-suite. com/p/simple-steganalysis-suite/
+Hempstalk, Kathryn (2006). Digital Invisible Ink Toolkit. sourceforge.net/.

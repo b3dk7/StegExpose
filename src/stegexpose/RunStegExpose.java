@@ -152,6 +152,24 @@ public class RunStegExpose {
 					if(isClean()){
 						continue;
 					}
+					
+					
+					//computing Sample Pairs average
+					try{
+						SamplePairs spo = new SamplePairs();
+						sp = steralize((spo.doAnalysis(image, RED) + spo.doAnalysis(image, GREEN) + spo.doAnalysis(image, BLUE))/3);
+						add(sp);
+					}
+					catch(Exception e){
+					}
+					
+					
+					//looking for fast break
+					if(isClean()){
+						continue;
+					}
+					
+					
 					//computing chi square attack
 					try{
 						int nbBlocks = ((3*image.getWidth()*image.getHeight())/csSize) - 1;
@@ -167,21 +185,6 @@ public class RunStegExpose {
 					catch(Exception e){
 						
 					}
-					
-					//looking for fast break
-					if(isClean()){
-						continue;
-					}
-					
-					//computing Sample Pairs average
-					try{
-						SamplePairs spo = new SamplePairs();
-						sp = steralize((spo.doAnalysis(image, RED) + spo.doAnalysis(image, GREEN) + spo.doAnalysis(image, BLUE))/3);
-						add(sp);
-					}
-					catch(Exception e){
-					}
-					
 					
 					//looking for fast break
 					if(isClean()){
