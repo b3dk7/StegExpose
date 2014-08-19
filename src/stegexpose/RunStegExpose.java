@@ -19,7 +19,9 @@ import fr.steganalysis.PrimarySets;
 
 
 /**
- * StegExpose
+ * RunStegExpose
+ * 
+ * Implements a command line interface program that 
  * 
  * @author Benedikt Boehm
  * @version 0.1
@@ -241,6 +243,13 @@ public class RunStegExpose {
     
 	}
 	
+	
+	
+	/**
+	 * Adds detector output to stegExposeInput only if the value to be added is a actual number (not NaN).
+	 * 
+	 * @param  value to be added
+	 */
 	private static void add(Double x){
 		if(x.isNaN()==false){
 			stegExposeInput.add(x);
@@ -251,8 +260,8 @@ public class RunStegExpose {
 	/**
 	 * used by fast mode to check if it is save to pass a file off as clean
 	 * 
-	 * @param abyte The byte to flip.
-	 * @return The byte with the flipped LSB.
+	 * @param 
+	 * @return 
 	 */
 	private static boolean isClean(){
 		if(fast){

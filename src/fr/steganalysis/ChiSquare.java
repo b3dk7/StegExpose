@@ -10,6 +10,7 @@
  * http://cuneytcaliskan.blogspot.fr/2011/12/steganalysis-chi-square-attack-lsb.html
  * 
  * source: http://code.google.com/p/simple-steganalysis-suite/
+ * author: Bastien Faure
  */
 
 package fr.steganalysis;
