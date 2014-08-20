@@ -21,7 +21,7 @@ import fr.steganalysis.PrimarySets;
 /**
  * RunStegExpose
  * 
- * Implements a command line interface program that 
+ * Implements program for scanning multiple files for steganography
  * 
  * @author Benedikt Boehm
  * @version 0.1
@@ -34,33 +34,26 @@ public class RunStegExpose {
 	private static int csSize = 1024;
 	//threshold to be applied to stegexpose indicator
 	private static double threshold = 0.2;
-	//setting percentage points for fast mode
-	//private static double speedThreshold = 0.1;
-	//private static double cleanThreshold;
-
 	private static boolean fast = false;
 	private static boolean csvMode = false;
-	
 	private static double minProb = 0;
 	private static double maxProb = 1;
-	
+	//setting color codes for rs and sample pair detectors
 	private static int RED =0;
 	private static int GREEN =1;
 	private static int BLUE =2;
-	
+	//current file being processed
 	private static String fileName;
 	
 	
 	//prepare csv file file
 	private static PrintWriter writer;
 	
-	
+	//list of individual detectors to feed into fusion algorithm
 	private static ArrayList<Double> stegExposeInput;
 	private static double fileSize;
 	
-	
-	
-
+	//initialising all detectors
 	private static Double ps = null;
 	private static Double cs=null;
 	private static Double sp = null;
@@ -69,7 +62,11 @@ public class RunStegExpose {
 	private static Long fusionQ=null;
 	
 	
-	
+	/**
+	 * Main method to run the program
+	 * 
+	 * @param args	Stegexpoe arguments in the following format [directory] [speed (optional)] [threshold (optional)] [csv file (optional)]
+	 */
 	public static void main(String[] args){
 		
 		//obtaining all files to be steganalysed
@@ -100,11 +97,6 @@ public class RunStegExpose {
 			
 		}
 		
-		//now that thresholds are set, we can setup thresholds for fast decisions
-		//cleanThreshold = threshold - speedThreshold;
-		//double stegoThreshold = threshold + speedThreshold;
-		
-		
 		//creating a file for csv output providing full steganalytic report (optional parameter)
 		if(args.length>3)
 			csvMode =true;
@@ -117,10 +109,7 @@ public class RunStegExpose {
 			writer.println("File name,Above stego threshold?,Secret message size in bytes (ignore for clean files),Primary Sets,Chi Square,Sample Pairs,RS analysis,Fusion (mean)");
 		}
 
-		
-		
-		
-		
+		//iterating through all files in a given directory
 		for (File file : listOfFiles) {
 		    //reset all detectors
 			ps = null;
@@ -151,9 +140,8 @@ public class RunStegExpose {
 					
 					
 					//looking for fast break
-					if(isClean()){
+					if(isClean())
 						continue;
-					}
 					
 					
 					//computing Sample Pairs average
@@ -165,12 +153,9 @@ public class RunStegExpose {
 					catch(Exception e){
 					}
 					
-					
 					//looking for fast break
-					if(isClean()){
+					if(isClean())
 						continue;
-					}
-					
 					
 					//computing chi square attack
 					try{
@@ -189,10 +174,8 @@ public class RunStegExpose {
 					}
 					
 					//looking for fast break
-					if(isClean()){
+					if(isClean())
 						continue;
-					}
-					
 					
 					//computing RS Analysis average
 					try{
@@ -208,20 +191,29 @@ public class RunStegExpose {
 					catch(Exception e){
 					}
 					printResults();
-					
-		        }
-	        
-		    }
+				}
+	        }
 		}
 		if(csvMode)
 			writer.close();
 	}
+	
+	/**
+	 * Detector output should not be negative or above 100%. This method ensures all outputs are corrected if need be
+	 * 
+	 * @param x		percentage value to be sterilised (corrected)
+	 * @return 		modified percentage value between 0 and 1
+	 */
 	private static double steralize(double x){
 		x=Math.abs(x);
 		if(x>1)
 			return 1;
 		return x;
 	}
+	
+	/**
+	 * Print out results of the steganalysis according to whether csv mode is turned on or off
+	 */
 	private static void printResults(){
 		//setting up stegexpose and quantitative stegexpose detector
 		fusion = Fuse.se(stegExposeInput);
@@ -243,12 +235,11 @@ public class RunStegExpose {
     
 	}
 	
-	
-	
+
 	/**
 	 * Adds detector output to stegExposeInput only if the value to be added is a actual number (not NaN).
 	 * 
-	 * @param  value to be added
+	 * @param  x	value to be added
 	 */
 	private static void add(Double x){
 		if(x.isNaN()==false){
@@ -260,8 +251,7 @@ public class RunStegExpose {
 	/**
 	 * used by fast mode to check if it is save to pass a file off as clean
 	 * 
-	 * @param 
-	 * @return 
+	 * @return true if file is regarded as clean
 	 */
 	private static boolean isClean(){
 		if(fast){
@@ -269,8 +259,6 @@ public class RunStegExpose {
 				printResults();
 				return true;
 			}
-				
-			
 		}
 		return false;
 			
