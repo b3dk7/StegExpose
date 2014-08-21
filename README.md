@@ -41,7 +41,7 @@ The accuracy and speed of StegExpose has been tested on an image pool of 15,200 
 
 ###Accuracy (ROC curves)
 ROC or receiver operating characteristic curves expose the accuracy of a given signal. The curve below is used to demonstrate only the comparison between the the accuracy of StegExpose's fusion techniques (standard and fast) and the individual detectors it is derived from. Please note that the accuracy of each signal is very much dependant on the nature of the stego files they were tested on and can be a lot higher or lower depending on the embedding rate and method.
-![alt text][roc.png]
+![alt text](roc.png)
 The area under the curves reveals that the standard fusion technique is the most accurate. The fast fusion technique is only slightly outperformed by standard fusion (1.6%) and RS analysis (0.2%). However, fast fusion does offer a clear advantage, as it 3.2 times faster than RS analysis and 3.5 times faster than standard fusion.
 
 ###Speed
