@@ -106,7 +106,11 @@ public class RunStegExpose {
 			}
 			catch (Exception e) {}
 			writer.println();
-			writer.println("File name,Above stego threshold?,Secret message size in bytes (ignore for clean files),Primary Sets,Chi Square,Sample Pairs,RS analysis,Fusion (mean)");
+			if(fast)
+				writer.println("File name,Above stego threshold?,Secret message size in bytes (ignore for clean files),Primary Sets,Chi Square,Sample Pairs,RS analysis,Fusion (mean & fast)");
+			else
+				writer.println("File name,Above stego threshold?,Secret message size in bytes (ignore for clean files),Primary Sets,Chi Square,Sample Pairs,RS analysis,Fusion (mean)");
+			
 		}
 
 		//iterating through all files in a given directory
