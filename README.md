@@ -54,6 +54,7 @@ Compilation
 To recompile the source code and create a new executable jar file, the following commands should do the trick.
 
 *javac -cp commons-math3-3.1.1.jar *.java*
+
 *jar cfm StegExpose.jar manifest.mf *.class*
 
 Bugs

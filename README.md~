@@ -48,6 +48,15 @@ The area under the curves reveals that the standard fusion technique is the most
 ###Speed
 A 460x460 pixel image will take **1.20** seconds to process in the default mode and **0.34** seconds in fast mode. However, the fast mode should be even faster in a real world environment, where there are a lot less stego files, allowing StegExpose to skip expensive detectors more frequently. 
 
+
+Compilation
+-----------
+To recompile the source code and create a new executable jar file, the following commands should do the trick.
+
+*javac -cp commons-math3-3.1.1.jar *.java*
+
+*jar cfm StegExpose.jar manifest.mf *.class*
+
 Bugs
 ----
 Component detectors do not all generate results for all images. This bug is present in the reused source code listed below. This bug impacts the speed of the fast mode as well as the accuracy of both fast and standard modes of StegExpose.
@@ -55,3 +64,9 @@ Component detectors do not all generate results for all images. This bug is pres
 Acknowledgements
 --------
 I would like to thank Julio Hernandez-Castro for supervising this project and coming up with the idea. Also, thank you Bastien Faure and Kathryn Hempstalk for publishing your source code.
+
+Support
+--------
+BTC address: 1JKsTRYxgVr1cyzxDEiRiCUYmrEDueGcPe
+
+
