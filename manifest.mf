@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: RunStegExpose
+Class-Path: commons-math3-3.1.1.jar
+
