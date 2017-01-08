@@ -65,8 +65,5 @@ Acknowledgements
 --------
 I would like to thank Julio Hernandez-Castro for supervising this project and coming up with the idea. Also, thank you Bastien Faure and Kathryn Hempstalk for publishing your source code.
 
-Support
---------
-BTC address: 1JKsTRYxgVr1cyzxDEiRiCUYmrEDueGcPe
 
 
