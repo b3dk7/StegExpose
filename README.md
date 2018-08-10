@@ -18,7 +18,7 @@ where
 
 *[speed]* - Optional. Can be set to 'default' or 'fast' (set to 'default if left blank). default mode will try and run all detectors whereas fast mode will skip the expensive detectors in case cheap detectors are able to determine if a file is clean.
 
-*[threshold]* - Optional. The default value here is 0.2 (for both speed modes) and determines the the level at which files are considered to be hiding data or not. A floating point value between 0 and 1 can be used here to update the threshold. If keeping false positives at bay is of priority, set the threshold slightly higher ~0.25. If reducing false negatives is more important, set the threshold slightly lower ~0.15
+*[threshold]* - Optional. The default value here is 0.2 (for both speed modes) and determines the level at which files are considered to be hiding data or not. A floating point value between 0 and 1 can be used here to update the threshold. If keeping false positives at bay is of priority, set the threshold slightly higher ~0.25. If reducing false negatives is more important, set the threshold slightly lower ~0.15
 
 *[csv file]* - Optional. Name of the csv (comma separated value) file that is to be generated. that If left blank, the program will simply output to the console. 
 
@@ -41,7 +41,7 @@ Performance
 The accuracy and speed of StegExpose has been tested on an image pool of 15,200 lossless images, where 5,200 of them were stego images (images with hidden data) created with the tools OpenStego, OpenPuff, SilentEye and LSB-Steganography. Embedding rates range from 2.5% to 25.3% with an average of 13.8% (secret data / cover image).
 
 ###Accuracy (ROC curves)
-ROC or receiver operating characteristic curves expose the accuracy of a given signal. The curve below is used to demonstrate only the comparison between the the accuracy of StegExpose's fusion techniques (standard and fast) and the individual detectors it is derived from. Please note that the accuracy of each signal is very much dependant on the nature of the stego files they were tested on and can be a lot higher or lower depending on the embedding rate and method.
+ROC or receiver operating characteristic curves expose the accuracy of a given signal. The curve below is used to demonstrate only the comparison between the accuracy of StegExpose's fusion techniques (standard and fast) and the individual detectors it is derived from. Please note that the accuracy of each signal is very much dependant on the nature of the stego files they were tested on and can be a lot higher or lower depending on the embedding rate and method.
 ![alt text](roc.png)
 The area under the curves reveals that the standard fusion technique is the most accurate. The fast fusion technique is only slightly outperformed by standard fusion (1.6%) and RS analysis (0.2%). However, fast fusion does offer a clear advantage, as it 3.2 times faster than RS analysis and 3.5 times faster than standard fusion.
 
